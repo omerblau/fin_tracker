@@ -1,1 +1,8 @@
-/
+# Ignore generated CSV files
+/csvs/
+
+# Ignore processed input files
+/converted_inputes/
+
+# Ignore raw input files
+/inputs/
