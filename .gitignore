@@ -2,7 +2,9 @@
 /csvs/
 
 # Ignore processed input files
-/converted_inputes/
+/converted_inputs/
 
+# Ignore pycache files
+/__pycache__/
 # Ignore raw input files
 /inputs/
