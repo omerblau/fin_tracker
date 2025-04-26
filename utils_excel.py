@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 import shutil
 import re
+import html  # add html module for unescaping
 
 from utils_file import move_file
 
@@ -11,7 +12,7 @@ def is_excel_file(path: str | Path) -> bool:
     return Path(path).suffix.lower() in {".xlsx", ".xls"}
 
 
-_illegal = re.compile(r'[<>:"/\\|?*\']')  # any char you don’t want in a filename
+_illegal = re.compile(r'[<>:"/\\|?*\']')  # any char you don't want in a filename
 
 
 def xlsx_to_csvs(xlsx_path: str | Path, out_dir: str | Path) -> list[Path]:
@@ -43,7 +44,11 @@ def _save_sheet_as_csv(xls: pd.ExcelFile, sheet_name: str, out_dir: Path) -> Pat
     """Helper: save one sheet; assume *xls* is already open."""
     df = pd.read_excel(xls, sheet_name=sheet_name)
     stem = Path(xls.io).stem  # original filename, no extension
-    safe = _illegal.sub("-", sheet_name)  # strip bad chars
+
+    # Handle Hebrew quotes more elegantly - replace them with a simple character
+    # First ensure we're working with a plain string (not HTML entities)
+    clean_name = html.unescape(sheet_name)
+    safe = _illegal.sub("-", clean_name)  # strip bad chars
 
     csv_path = out_dir / f"{stem}_{safe}.csv"
     df.to_csv(csv_path, index=False, encoding="utf-8-sig")
@@ -53,7 +58,7 @@ def _save_sheet_as_csv(xls: pd.ExcelFile, sheet_name: str, out_dir: Path) -> Pat
 def process_inputs(input_dir: str | Path, csv_output_dir: str | Path, archive_dir: str | Path) -> list[Path]:
 
     input_dir, csv_output_dir, archive_dir = map(Path, (input_dir, csv_output_dir, archive_dir))
-    
+
     for d in (input_dir, csv_output_dir, archive_dir):
         d.mkdir(parents=True, exist_ok=True)
 
