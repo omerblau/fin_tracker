@@ -4,15 +4,7 @@ import pandas as pd
 import shutil
 import re
 
-
-def init_dirs(
-    csv_output_dir: str | Path, input_dir: str | Path, converted_inputs_dir: str | Path
-) -> tuple[Path, Path, Path]:
-
-    csv_output_dir, input_dir, converted_inputs_dir = map(Path, (csv_output_dir, input_dir, converted_inputs_dir))
-    for d in (csv_output_dir, input_dir, converted_inputs_dir):
-        d.mkdir(parents=True, exist_ok=True)
-    return csv_output_dir, input_dir, converted_inputs_dir
+from utils_file import move_file
 
 
 def is_excel_file(path: str | Path) -> bool:
@@ -56,24 +48,6 @@ def _save_sheet_as_csv(xls: pd.ExcelFile, sheet_name: str, out_dir: Path) -> Pat
     csv_path = out_dir / f"{stem}_{safe}.csv"
     df.to_csv(csv_path, index=False, encoding="utf-8-sig")
     return csv_path
-
-
-def move_file(src: str | Path, dst_dir: str | Path, *, overwrite: bool = False) -> Path:
-
-    src_path = Path(src).expanduser().resolve(strict=True)  # strict → raises if missing
-    if not src_path.is_file():
-        raise FileNotFoundError(f"{src_path} is not a regular file")
-
-    dst_dir = Path(dst_dir).expanduser().resolve()
-    dst_dir.mkdir(parents=True, exist_ok=True)
-
-    dst_path = dst_dir / src_path.name
-    if dst_path.exists() and not overwrite:
-        raise FileExistsError(f"{dst_path} already exists (use overwrite=True to replace)")
-
-    # shutil.move handles cross-device moves and preserves metadata where possible.
-    shutil.move(str(src_path), str(dst_path))
-    return dst_path
 
 
 def process_inputs(input_dir: str | Path, csv_output_dir: str | Path, archive_dir: str | Path) -> list[Path]:

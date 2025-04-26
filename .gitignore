@@ -1,10 +1,10 @@
-# Ignore generated CSV files
-/csvs/
-
-# Ignore processed input files
-/converted_inputs/
 
 # Ignore pycache files
-/__pycache__/
-# Ignore raw input files
+/__pycache__/ 
+
+#Ignore storage dirs
+/csvs/
+/converted_inputs/
 /inputs/
+/csv_archive/
+/clean_csvs/
