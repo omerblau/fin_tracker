@@ -1,7 +1,6 @@
 # utils_excel.py
 from pathlib import Path
 import pandas as pd
-import shutil
 import re
 import html  # add html module for unescaping
 

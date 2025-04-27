@@ -1,6 +1,7 @@
 
 # Ignore pycache files
-/__pycache__/ 
+/__pycache__/
+/.vscode/ 
 
 #Ignore storage dirs
 /csvs/
