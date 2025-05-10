@@ -1,3 +1,4 @@
+# utils.py
 import streamlit as st
 import pandas as pd
 
@@ -7,7 +8,7 @@ def xl_to_csv_max(file):
         sheets = pd.read_excel(file, sheet_name=None, engine="openpyxl")
 
         first_sheet = next(iter(sheets.values()))
-        st.session_state["month_year"] = first_sheet.iloc[1, 0]
+        transactions_date = first_sheet.iloc[1, 0]
 
         cleaned_dfs = []
 
@@ -18,7 +19,7 @@ def xl_to_csv_max(file):
             cleaned_dfs.append(cleaned_df)
 
         combined_df = pd.concat(cleaned_dfs, ignore_index=True, sort=False)
-        return combined_df
+        return combined_df, transactions_date
 
     except Exception as e:
         st.error(f"Error processing file: {str(e)}")
@@ -46,3 +47,14 @@ def format_df_max(df):
     )
     cleaned["תאריך עסקה"] = pd.to_datetime(cleaned["תאריך עסקה"], format="%d-%m-%Y")
     return cleaned
+
+
+def transactions_to_cards(df):
+    cards = df["4 ספרות אחרונות של כרטיס האשראי"].unique().tolist()
+    csrds_dfs = {}
+
+    for card in cards:
+        csrds_dfs[card] = df[df["4 ספרות אחרונות של כרטיס האשראי"] == card].drop(
+            ["4 ספרות אחרונות של כרטיס האשראי"], axis=1
+        )
+    return csrds_dfs
